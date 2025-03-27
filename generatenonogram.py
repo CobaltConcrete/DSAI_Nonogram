@@ -1,86 +1,82 @@
 import random
 import csv
-from math import comb
 from typing import List
+from calculate_states import calculate_states
 
-# Function to calculate valid states for a given row or column
-def calculate_states(clue: List[int], max_cells: int) -> int:
+def generate_clue(line: List[str]) -> List[int]:
     """
-    Calculate the number of valid ways to place a given Nonogram row clue within a row of max_cells.
-
-    :param clue: List of integers representing the clue (block sizes).
-    :param max_cells: The total number of cells in the row.
-    :return: The number of valid configurations for the given clue in the row.
+    Given a list of cells (each either '#' or '_'),
+    return the Nonogram clue (consecutive '#' counts).
     """
-    # If the clue contains only [0], it means no shaded blocks, so return 0
-    if clue == [0]:
-        return 0
-    
-    w = len(clue)  # Number of groups
-    occupied_space = sum(clue)  # Sum of filled cells
-    min_required_space = occupied_space + (w - 1)  # Including mandatory gaps
-    
-    # If the total required space exceeds max_cells, return 0 (impossible case)
-    if min_required_space > max_cells:
-        return 0
-
-    # Remaining free spaces available for distribution
-    free_spaces = max_cells - min_required_space
-
-    # Compute the number of ways to distribute free spaces using combinations formula
-    return comb(free_spaces + w, w)
-
-# Function to generate a random 5x5 nonogram with row and column clues
-def generate_nonogram(size=5):
-    # Create a random grid with # (shaded) and X (blank)
-    grid = [[random.choice(['#', '_']) for _ in range(size)] for _ in range(size)]
-    
-    # Function to generate clues for a line (row or column)
-    def generate_clue(line):
-        clues = []
-        count = 0
-        for cell in line:
-            if cell == '#':  # Shaded square
-                count += 1
-            elif count > 0:
+    clues = []
+    count = 0
+    for cell in line:
+        if cell == '#':
+            count += 1
+        else:
+            if count > 0:
                 clues.append(count)
                 count = 0
-        if count > 0:
-            clues.append(count)
-        return clues if clues else [0]
-    
-    # Generate row and column clues
-    row_clues = [generate_clue(row) for row in grid]
-    column_clues = [generate_clue([grid[row][col] for row in range(size)]) for col in range(size)]
-    
-    # Convert column clues to the required format (list of integers)
-    column_clues_str = [str(clue).replace(' ', '') for clue in column_clues]
+    # If the last cells were '#', append the final count
+    if count > 0:
+        clues.append(count)
+    # If no filled cells, return [0]
+    return clues if clues else [0]
 
-    # Prepare data to write in CSV format
+
+def generate_nonogram(size=5):
+    """
+    Create a random grid of '#' and '_' of given size,
+    then generate row and column clues. Return the CSV-like data
+    plus the row and column clues as lists of ints.
+    """
+    # Create a random grid
+    grid = [[random.choice(['#', '_']) for _ in range(size)] for _ in range(size)]
+    
+    # Generate row clues
+    row_clues = [generate_clue(row) for row in grid]
+    
+    # Generate column clues
+    column_clues = []
+    for col in range(size):
+        column = [grid[r][col] for r in range(size)]
+        column_clues.append(generate_clue(column))
+    
+    # Prepare data for CSV
+    # Convert column clues to string
+    column_clues_str = [str(clue).replace(' ', '') for clue in column_clues]
+    
+    # First row of CSV: the column clues
     data = [['Clue'] + column_clues_str]
+    
+    # Subsequent rows: row clue + the actual grid
     for i in range(size):
         data.append([str(row_clues[i]).replace(' ', '')] + grid[i])
-
+    
     return data, row_clues, column_clues
 
-# Function to calculate the min state based on row and column states
-def calculate_min_state(row_clues, column_clues, size):
+
+def calculate_min_state(row_clues: List[List[int]], column_clues: List[List[int]], size: int) -> int:
+    """
+    Calculate the "min_state" as the minimum of the product of
+    valid row states and valid column states.
+    """
     row_states = 1
     col_states = 1
     
-    # Calculate row states
     for row in row_clues:
         row_states *= calculate_states(row, size)
-    
-    # Calculate column states
     for col in column_clues:
         col_states *= calculate_states(col, size)
     
-    # Return the minimum of row and column states
     return min(row_states, col_states)
 
-# Keep generating nonograms until the minimum state is <= 120
+
 def generate_valid_nonogram(size=5):
+    """
+    Keep generating random 5x5 Nonograms until the min_state is between 90 and 120.
+    Return the CSV-like data once we get a puzzle in that range.
+    """
     min_state = float('inf')
     while min_state > 120 or min_state < 90:
         nonogram_data, row_clues, column_clues = generate_nonogram(size)
@@ -88,25 +84,38 @@ def generate_valid_nonogram(size=5):
         print(f"Generated nonogram with min_state: {min_state}")
     return nonogram_data
 
-def replace_shaded_squares(input_filename, output_filename):
+
+def replace_shaded_squares(input_filename: str, output_filename: str):
+    """
+    Read a CSV, replace all '#' with '_', and save to a new file.
+    This creates the 'problem' version from the 'solution' version.
+    """
     with open(input_filename, mode='r', newline='') as infile:
         reader = csv.reader(infile)
-        data = [ [cell.replace('#', '_') for cell in row] for row in reader ]
+        data = []
+        for row in reader:
+            new_row = []
+            for cell in row:
+                new_row.append(cell.replace('#', '_'))
+            data.append(new_row)
     
     with open(output_filename, mode='w', newline='') as outfile:
         writer = csv.writer(outfile)
         writer.writerows(data)
-
+    
     print(f"All '#' replaced with '_' and saved to {output_filename}")
 
-# Generate a valid nonogram
-valid_nonogram_data = generate_valid_nonogram()
 
-# Write the nonogram to CSV
-solution_filename = './5x5_nonogram_solution.csv'
-with open(solution_filename, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerows(valid_nonogram_data)
-replace_shaded_squares(solution_filename, '5x5_nonogram_problem.csv')
+if __name__ == "__main__":
+    # Generate a valid nonogram and save it
+    valid_nonogram_data = generate_valid_nonogram(size=5)
 
-print("Valid 5x5 Nonogram has been generated in CSV format!")
+    solution_filename = './5x5_nonogram_solution.csv'
+    with open(solution_filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(valid_nonogram_data)
+
+    # Create a 'problem' version (with all '#' replaced by '_')
+    replace_shaded_squares(solution_filename, '5x5_nonogram_problem.csv')
+
+    print("Valid 5x5 Nonogram has been generated in CSV format!")
