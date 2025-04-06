@@ -86,6 +86,14 @@ def print_grid_count_and_grids(valid_grids, total_states):
 # Example Usage
 column_clues = [[2], [2], [1,1], [1]]
 row_clues = [[1], [0], [4], [2]]
+column_clues = [[1], [2], [2], [2]]
+row_clues = [[1], [1,1], [2], [2]]
+# row_clues = [[2], [4], [1, 1], [1], [2], [1]]
+# column_clues = [[2], [1], [2, 1], [5], [1], [0]]
+# column_clues = [[2],[1,3],[1,1,3],[2,7],[4,3],[2,4],[3,1],[2,1,1],[1,3],[1,1,3]]
+# row_clues = [[3,1,1],[6],[1,1,2],[6],[1,1],[1,5],[1,1,2],[4,3],[5],[5]]
+
+
 size = 4
 
 row_combinations = generate_all_row_combinations(row_clues, size)

@@ -120,12 +120,12 @@ if __name__ == "__main__":
     # Generate a valid nonogram and save it
     valid_nonogram_data = generate_valid_nonogram(size=4)
 
-    solution_filename = './4x4_nonogram2_solution.csv'
+    solution_filename = './4x4_nonogram3_solution.csv'
     with open(solution_filename, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(valid_nonogram_data)
 
     # Create a 'problem' version (with all '#' replaced by '_')
-    replace_shaded_squares(solution_filename, f'4x4_nonogram2_problem.csv')
+    replace_shaded_squares(solution_filename, f'4x4_nonogram3_problem.csv')
 
     print("Valid 4x4 Nonogram has been generated in CSV format!")
