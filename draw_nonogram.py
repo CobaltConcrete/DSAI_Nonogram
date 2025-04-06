@@ -87,9 +87,9 @@ def convert_nonogram_to_png(input_csv_path: str,
 
 if __name__ == "__main__":
     # Example usage
-    input_csv_path = "./5x5_nonogram_solution.csv"
-    solution_image_path = "nonogram_solution_output.png"
-    problem_image_path = "nonogram_problem_output.png"
+    input_csv_path = "./4x4_nonogram_solution.csv"
+    solution_image_path = "4x4_nonogram_solution_output.png"
+    problem_image_path = "4x4_nonogram_problem_output.png"
 
     # Draw the solution version (filled cells)
     convert_nonogram_to_png(input_csv_path, solution_image_path, is_solution=True)

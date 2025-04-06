@@ -41,11 +41,15 @@ def solve_nonogram(column_clues, row_clues):
     dfs(0, 0)
     return grid, states_explored
 
-column_clues = [[1,1,1],[2,1],[3],[2],[2,1]]
-row_clues = [[3,1],[2,1],[1,1],[1,2],[1,1]]
+# column_clues = [[1,1,1],[2,1],[3],[2],[2,1]]
+# row_clues = [[3,1],[2,1],[1,1],[1,2],[1,1]]
+column_clues = [[1],[1],[2],[3]]
+row_clues = [[1],[2],[3],[1]]
+column_clues = [[3],[2],[4],[4],[1,3]]
+row_clues = [[1,2],[1,2],[5],[4],[1,1]]
 
 solution, states_explored = solve_nonogram(column_clues, row_clues)
 print("Solution:")
 for row in solution:
-    print("".join("#" if cell == 1 else "." for cell in row))
+    print("".join("#" if cell == 1 else "_" for cell in row))
 print("Game states explored:", states_explored)
