@@ -356,4 +356,4 @@ for name, algorithm in recorded_search_algorithms:
     print_solution(solution_node.state if solution_node else None)
     print("Search Tree:")
     print_tree(tree_root)
-    print("\n" + "="*60 + "\n")x
+    print("\n" + "="*60 + "\n")
