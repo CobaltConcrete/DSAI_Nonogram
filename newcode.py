@@ -327,10 +327,11 @@ def print_solution(state):
 # Main Execution: Setup Puzzle and Run Recorded Search Algorithms
 # -------------------------------
 
-# Example puzzle configuration (size 4)
-row_clues = [[1], [1, 1], [2], [2]]
-column_clues = [[1], [2], [2], [2]]
-size = 4
+# For a 5x5 puzzle, we update the size and clues accordingly.
+# In this example, the clues create a symmetric pattern (a cross-like shape).
+row_clues = [[1], [3], [5], [3], [1]]
+column_clues = [[1], [3], [5], [3], [1]]
+size = 5
 
 # Create a Nonogram puzzle instance.
 puzzle = NonogramPuzzle(row_clues, column_clues, size)
@@ -346,7 +347,7 @@ recorded_search_algorithms = [
     ("A* Search", recorded_astar_search)
 ]
 
-print("Nonogram Puzzle Recorded Search Results (with search trees):\n")
+print("Nonogram Puzzle Recorded Search Results (with search trees) for a 5x5 Puzzle:\n")
 for name, algorithm in recorded_search_algorithms:
     solution_node, explored, tree_root = algorithm(puzzle)
     print(f"--- {name} ---")
